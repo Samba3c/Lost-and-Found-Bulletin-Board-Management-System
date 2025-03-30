@@ -341,6 +341,77 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
             }
         }
     </style>
+    <script>
+        // 在選擇檔案時預覽並調整圖片
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 檢查是否為圖片
+            if (!file.type.startsWith('image/')) {
+                alert('請選擇圖片檔案');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // 創建 canvas 來調整圖片大小
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // 計算新的尺寸，保持比例
+                    let width = 600;
+                    let height = (img.height * 600) / img.width;
+
+                    // 設定 canvas 尺寸
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // 繪製調整大小後的圖片
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // 顯示預覽
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = canvas.toDataURL(file.type);
+                    preview.style.display = 'block';
+
+                    // 將調整大小後的圖片資料存入隱藏的 input
+                    canvas.toBlob(function(blob) {
+                        // 創建新的 File 物件
+                        const resizedFile = new File([blob], file.name, {
+                            type: file.type,
+                            lastModified: new Date().getTime()
+                        });
+
+                        // 創建新的 FileList 物件
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(resizedFile);
+                        
+                        // 更新 input file 的值
+                        document.getElementById('image').files = dataTransfer.files;
+                    }, file.type);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 表單提交前的驗證
+        function validateForm() {
+            const name = document.getElementById('name').value;
+            const image = document.getElementById('image').files[0];
+            const found_date = document.getElementById('found_date').value;
+            
+            if (!name || !image || !found_date) {
+                alert('請填寫所有必填欄位');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -356,7 +427,7 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
                 </div>
             <?php endif; ?>
 
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label for="name">物品名稱：</label>
                     <input type="text" id="name" name="name" required>
@@ -364,9 +435,8 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
 
                 <div class="form-group">
                     <label for="image">物品照片：</label>
-                    <input type="file" id="image" name="image" accept="image/*" required 
-                           onchange="previewImage(this);">
-                    <img id="preview" class="preview-image">
+                    <input type="file" id="image" name="image" accept="image/*" required onchange="handleImageSelect(event)">
+                    <img id="imagePreview" src="#" alt="預覽圖片" style="display: none; max-width: 100%; margin-top: 10px;">
                 </div>
 
                 <div class="form-group">
