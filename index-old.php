@@ -380,10 +380,9 @@ $returnedItems = $returnedResult->fetch_assoc()['returned'];
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-links">
-                <a href="?week=current" class="footer-link">本週遺失物</a>
+                <a href="admin/admin.php" class="footer-link">管理後台</a>
                 <a href="?week=prev" class="footer-link">上週遺失物</a>
                 <a href="?week=prev2" class="footer-link">上上週遺失物</a>
-                <a href="admin/admin.php" class="footer-link">管理後台</a>
             </div>
         </div>
     </footer>

@@ -1,0 +1,30 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS lost_and_found;
+
+-- Use the database
+USE lost_and_found;
+
+-- Create items table
+CREATE TABLE IF NOT EXISTS items (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    found_date DATE NOT NULL,
+    status ENUM('found', 'returned') DEFAULT 'found',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create tags table
+CREATE TABLE IF NOT EXISTS tags (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Create item_tags table for many-to-many relationship
+CREATE TABLE IF NOT EXISTS item_tags (
+    item_id INT(11),
+    tag_id INT(11),
+    PRIMARY KEY (item_id, tag_id),
+    FOREIGN KEY (item_id) REFERENCES items(id),
+    FOREIGN KEY (tag_id) REFERENCES tags(id)
+);
