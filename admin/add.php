@@ -72,11 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 新增標籤關聯
             if (!empty($tags)) {
                 $stmt = $conn->prepare("INSERT INTO item_tags (item_id, tag_id) VALUES (?, ?)");
-                foreach ($tags as $tag_id) {
-                    $stmt->bind_param("ii", $item_id, $tag_id);
-                    if (!$stmt->execute()) {
-                        throw new Exception("新增標籤關聯失敗: " . $stmt->error);
-                    }
+                $stmt->bind_param("ii", $item_id, $tags);
+                if (!$stmt->execute()) {
+                    throw new Exception("新增標籤關聯失敗: " . $stmt->error);
                 }
             }
 
@@ -245,7 +243,7 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .tag-item input[type="checkbox"] {
+        .tag-item input[type="radio"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
@@ -429,14 +427,14 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
 
             <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <div class="form-group">
-                    <label for="name">物品名稱：</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
                     <label for="image">物品照片：</label>
                     <input type="file" id="image" name="image" accept="image/*" required onchange="handleImageSelect(event)">
                     <img id="imagePreview" src="#" alt="預覽圖片" style="display: none; max-width: 100%; margin-top: 10px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">物品名稱：</label>
+                    <input type="text" id="name" name="name" required>
                 </div>
 
                 <div class="form-group">
@@ -450,7 +448,7 @@ $tags_result = $conn->query("SELECT * FROM tags ORDER BY name");
                     <div class="tags-grid">
                         <?php while ($tag = $tags_result->fetch_assoc()): ?>
                             <div class="tag-item">
-                                <input type="checkbox" name="tags[]" 
+                                <input type="radio" name="tags" 
                                        value="<?php echo $tag['id']; ?>"
                                        id="tag_<?php echo $tag['id']; ?>">
                                 <label for="tag_<?php echo $tag['id']; ?>">
