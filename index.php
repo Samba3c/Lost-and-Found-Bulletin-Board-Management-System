@@ -15,9 +15,9 @@ switch ($week) {
         break;
     case 'prev2':
         // 上上週一
-        $start_date = date('Y-m-d', strtotime('monday 2 weeks ago'));
+        $start_date = date('Y-m-d', strtotime('-2 week monday'));
         // 上上週六
-        $end_date = date('Y-m-d', strtotime('saturday 2 weeks ago'));
+        $end_date = date('Y-m-d', strtotime('-2 week saturday'));
         break;
     default:
         // 本週一
@@ -177,6 +177,7 @@ $returnedItems = $returnedResult->fetch_assoc()['returned'];
         .slide {
             flex: 0 0 33.333%;
             padding: 10px;
+            aspect-ratio: 3/4;
         }
 
         .slide-content {
@@ -184,11 +185,12 @@ $returnedItems = $returnedResult->fetch_assoc()['returned'];
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--shadow);
+            height: 100%;
         }
 
         .slide img {
             width: 100%;
-            height: 300px;
+            height: 100%;
             object-fit: cover;
             border-radius: var(--border-radius);
         }
