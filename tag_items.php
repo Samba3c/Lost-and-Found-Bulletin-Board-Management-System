@@ -110,6 +110,9 @@ $items_result = $stmt->get_result();
             box-shadow: var(--shadow);
             overflow: hidden;
             transition: transform 0.3s ease;
+            aspect-ratio: 3/4;
+            display: flex;
+            flex-direction: column;
         }
 
         .item-card:hover {
@@ -119,12 +122,13 @@ $items_result = $stmt->get_result();
 
         .item-image {
             width: 100%;
-            height: 200px;
+            flex: 1;
             object-fit: cover;
         }
 
         .item-info {
             padding: 20px;
+            background: var(--panel-bg);
         }
 
         .item-name {
@@ -253,9 +257,8 @@ $items_result = $stmt->get_result();
         <header class="header">
             <h1>標籤物品列表</h1>
             <?php if ($tag): ?>
-                <div class="tag-name"><?php echo htmlspecialchars($tag['name']); ?></div>
                 <div class="tag-description">
-                    顯示所有標記為「<?php echo htmlspecialchars($tag['name']); ?>」的物品
+                    顯示所有標記為<div class="tag-name"><?php echo htmlspecialchars($tag['name']); ?></div>的物品
                 </div>
             <?php endif; ?>
             <a href="index.php" class="back-link">返回首頁</a>
