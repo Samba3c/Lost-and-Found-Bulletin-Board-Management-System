@@ -10,15 +10,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'add' && !empty($_POST['tag_name'])) {
         $tag_name = trim($_POST['tag_name']);
         
-        $sql = "INSERT INTO tags (name) VALUES (?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $tag_name);
+        // 檢查標籤是否已存在
+        $check_sql = "SELECT COUNT(*) as count FROM tags WHERE name = ?";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("s", $tag_name);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+        $exists = $result->fetch_assoc()['count'] > 0;
         
-        if ($stmt->execute()) {
-            $message = "標籤新增成功！";
-            $success = true;
+        if ($exists) {
+            $message = "標籤「" . htmlspecialchars($tag_name) . "」已經存在！";
+            $success = false;
         } else {
-            $message = "Error: " . $conn->error;
+            $sql = "INSERT INTO tags (name) VALUES (?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $tag_name);
+            
+            if ($stmt->execute()) {
+                $message = "標籤新增成功！";
+                $success = true;
+            } else {
+                $message = "Error: " . $conn->error;
+                $success = false;
+            }
         }
     }
     // Delete tag
